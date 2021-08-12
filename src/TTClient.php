@@ -10,9 +10,11 @@ class TTClient
     private $payload;
     private $endpoint;
 
-    public function __construct(string $endpoint)
+    public function setEndpoint(string $endpoint)
     {
         $this->endpoint = $endpoint;
+
+        return $this;
     }
 
     public function setPayload($payload)
@@ -25,10 +27,13 @@ class TTClient
     /**
      * @throws Exception
      */
-    public function send()
+    public function send(): bool
     {
-        if (empty($payload)) {
+        if (empty($this->payload)) {
             throw new Exception('Payload not set.');
+        }
+        if (empty($this->endpoint)) {
+            throw new Exception('Endpoint not set.');
         }
 
         return $this->internalSend();
