@@ -7,6 +7,9 @@ use Exception;
 class TTClient
 {
     const JOB_STATUS_DONE = 'done';
+    const JOB_STATUS_IN_PROGRESS = 'in_progress';
+    const JOB_STATUS_FAILED = 'failed';
+
     private $endpoint;
     /**
      * @var int
