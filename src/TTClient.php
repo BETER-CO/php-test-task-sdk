@@ -32,15 +32,15 @@ class TTClient
     /**
      * @throws Exception
      */
-    public function createJob($key, $payload): bool
+    public function createJob($authKey, $message): bool
     {
         sleep(2);
 
         return random_int(25, 543);
-        //return $this->internalSend($key, $payload);
+        //return $this->internalSend($authKey, $message);
     }
 
-    public function checkJobStatus($jobId)
+    public function checkJobStatus($authKey, $jobId)
     {
         sleep(1);
 
@@ -58,14 +58,14 @@ class TTClient
     /**
      * @throws Exception
      */
-    private function internalSend($key, $payload): bool
+    private function internalSend($authKey, $message): bool
     {
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $this->endpoint);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS,
-            "payload=" . urlencode(json_encode($payload))) . '&key=' . urlencode($key);
+            "payload=" . urlencode(json_encode($message))) . '&key=' . urlencode($authKey);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
         curl_exec($ch);
@@ -75,7 +75,6 @@ class TTClient
         if ($responseCode !== 200) {
             throw new Exception('Error while trying to send message.');
         }
-        $this->payload = null;
 
         return true;
     }
