@@ -3,23 +3,28 @@
 namespace TestTaskSdkClient;
 
 use Exception;
-use http\Encoding\Stream;
 
 class TTClient
 {
-    private $payload;
-    private $endpoint;
+    const JOB_STATUS_DONE = 'done';
+    const JOB_STATUS_IN_PROGRESS = 'in_progress';
+    const JOB_STATUS_FAILED = 'failed';
 
-    public function setEndpoint(string $endpoint)
+    private $endpoint;
+    /**
+     * @var int
+     */
+    private $timeout = 0;
+
+    public function __construct($endpoint, $token)
     {
         $this->endpoint = $endpoint;
-
-        return $this;
+        $this->token = $token;
     }
 
-    public function setPayload($payload)
+    public function setTimeout(int $timeout)
     {
-        $this->payload = $payload;
+        $this->timeout = $timeout;
 
         return $this;
     }
@@ -27,32 +32,43 @@ class TTClient
     /**
      * @throws Exception
      */
-    public function send(): bool
+    public function createJob($key, $payload): bool
     {
-        if (empty($this->payload)) {
-            throw new Exception('Payload not set.');
-        }
-        if (empty($this->endpoint)) {
-            throw new Exception('Endpoint not set.');
-        }
+        sleep(2);
 
-        return $this->internalSend();
+        return random_int(25, 543);
+        //return $this->internalSend($key, $payload);
+    }
+
+    public function checkJobStatus($jobId)
+    {
+        sleep(1);
+
+        return self::JOB_STATUS_DONE;
+    }
+
+    public function auth()
+    {
+        //TODO: add usage of $this->token
+        sleep(1); // emulate send request
+
+        return 'secure_app_key';
     }
 
     /**
      * @throws Exception
      */
-    private function internalSend(): bool
+    private function internalSend($key, $payload): bool
     {
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $this->endpoint);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS,
-            "payload=" . urlencode(json_encode($this->payload)));
+            "payload=" . urlencode(json_encode($payload))) . '&key=' . urlencode($key);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 90);
-        $server_output = curl_exec($ch);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
+        curl_exec($ch);
         $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
