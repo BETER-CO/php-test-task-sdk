@@ -7,7 +7,7 @@ To install this package just add to your composer.json the following data:
 ```
 {
     "require": {
-        "beter/test-task-sdk": "1.*"
+        "beter/test-task-sdk": "2.*"
     }
 }
 ```
